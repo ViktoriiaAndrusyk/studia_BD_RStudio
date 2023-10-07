@@ -1,0 +1,157 @@
+---
+title: "Lab1_BD"
+output: pdf_document
+date: '2023-03-16'
+---
+
+```{r}
+load('S BD2 Lab1.Rdata')
+df=as.data.frame(l.wolnych.miejsc)
+df
+hist(l.wolnych.miejsc)
+min(l.wolnych.miejsc)
+max(l.wolnych.miejsc)
+miejsca=min(l.wolnych.miejsc):max(l.wolnych.miejsc)
+alpha=0.05
+m=tabulate(l.wolnych.miejsc)
+n=200
+
+```
+
+```{r}
+miejsca=min(l.wolnych.miejsc):max(l.wolnych.miejsc)
+ni = tabulate(l.wolnych.miejsc)[miejsca]#liczba w.miejsc + indeksy
+r = length(ni)
+n= length(l.wolnych.miejsc)
+df = data.frame(miejsca, ni)
+
+df
+lambda=sum(miejsca*ni)/n
+k=1
+pi=dpois(x=miejsca, lambda=lambda)
+df[("pi")]=pi
+df[("n*pi")]=n*pi
+df
+pi[1]=ppois(q=miejsca[1],lambda = lambda )
+pi[length(pi)]= ppois(q=96, lambda = lambda,lower.tail = FALSE)
+df[("pi")]=pi
+df[("n*pi")]=n*pi
+row.names(df)=as.character(miejsca)
+row.names(df)[1]=paste("0..",row.names(df)[1],sep = "")
+row.names(df)[length(row.names(df))]=
+  paste(row.names(df)[length(row.names(df))], "+", sep="")
+df
+```
+```{r}
+#0..58 do 60
+df[df$miejsca==60,c("ni","pi","n*pi")] =
+  df[df$miejsca==58,c("ni","pi","n*pi")] +
+  df[df$miejsca==59,c("ni","pi","n*pi")] +
+  df[df$miejsca==60,c("ni","pi","n*pi")]
+df = df[!df$miejsca==58,]
+df = df[!df$miejsca==59,]
+rownames(df)[rownames(df)=="60"]="0..60"
+# 61 do 63
+df[df$miejsca==63,c("ni","pi","n*pi")] =
+  df[df$miejsca==61,c("ni","pi","n*pi")] +
+  df[df$miejsca==62,c("ni","pi","n*pi")] +
+  df[df$miejsca==63,c("ni","pi","n*pi")]
+df = df[!df$miejsca==61,]
+df = df[!df$miejsca==62,]
+rownames(df)[rownames(df)=="63"]="61..63"
+#64 d0 65
+df[df$miejsca==65,c("ni","pi","n*pi")] =
+  df[df$miejsca==64,c("ni","pi","n*pi")] +
+  df[df$miejsca==65,c("ni","pi","n*pi")]
+df = df[!df$miejsca==64,]
+rownames(df)[rownames(df)=="65"]="64..65"
+#93 d0 94
+df[df$miejsca==94,c("ni","pi","n*pi")] =
+  df[df$miejsca==93,c("ni","pi","n*pi")] +
+  df[df$miejsca==94,c("ni","pi","n*pi")]
+df = df[!df$miejsca==93,]
+rownames(df)[rownames(df)=="94"]="93..95"
+#95 d0 96
+df[df$miejsca==96,c("ni","pi","n*pi")] =
+  df[df$miejsca==95,c("ni","pi","n*pi")] +
+  df[df$miejsca==96,c("ni","pi","n*pi")]
+df = df[!df$miejsca==95,]
+rownames(df)[rownames(df)=="96"]="95..96"
+df
+
+```
+ZADANIE 2-3
+```{r}
+x <- rnorm(100, mean = 170, sd = 10)
+plot(x=x,y=rep(0,100),ylab = "",yaxt = "n")
+hist(x=rnorm(n=100, mean = 170, sd = 10), breaks = 11, main = "Histogram próbek N(170,10)")
+
+x <- rnorm(1000, mean = 170, sd = 10)
+plot(x=x,y=rep(0,1000),ylab = "",yaxt = "n")
+hist(x=rnorm(n=1000, mean = 170, sd = 10), breaks = 21, main = "Histogram próbek N(170,10)")
+
+x <- rnorm(10000, mean = 170, sd = 10)
+plot(x=x,y=rep(0,10000),ylab = "",yaxt = "n")
+hist(x=rnorm(n=10000, mean = 170, sd = 10), breaks = 41, main = "Histogram próbek N(170,10)")
+
+```
+ZADANIE 4
+```{r}
+x = qnorm(p = seq(from = 0.5/100,to = 99.5/100,by = 1/100),mean = 170, sd = 10) 
+y = sort(rnorm(n = 100, mean = 170, sd = 10))
+plot(x = x,y = y)
+```
+ZADANIE 5 
+```{r}
+qqnorm(y)
+qqline(y)
+x = rt(n=100,df=20)
+qqnorm(x)
+qqline(x)
+
+```
+
+ZADANIE 6
+```{r}
+x <= dt(x = 0, df = 20)
+qqnorm(x)
+qqline(x)
+
+y <= runif(n=100, min = 10, max = 75)
+qqnorm(y)
+qqline(y)
+```
+ZADANIE 7 
+```{r}
+data("iris")
+"Setosa"
+qqnorm(iris[iris$Species=="setosa",]$Sepal.Length, main="Setosa: Sepal.Length")
+qqline(iris[iris$Species=="setosa",]$Sepal.Length, main="Setosa: Sepal.Length")
+qqnorm(iris[iris$Species=="setosa",]$Sepal.Width, main="Setosa: Sepal.Width")
+qqline(iris[iris$Species=="setosa",]$Sepal.Width, main="Setosa: Sepal.Width")
+qqnorm(iris[iris$Species=="setosa",]$Petal.Length, main="Setosa: Petal.Length")
+qqline(iris[iris$Species=="setosa",]$Petal.Length, main="Setosa: Petal.Length")
+qqnorm(iris[iris$Species=="setosa",]$Petal.Width, main="Setosa: Petal.Width")
+qqline(iris[iris$Species=="setosa",]$Petal.Width, main="Setosa: Petal.Width")
+
+# Versicolor
+qqnorm(iris[iris$Species=="versicolor",]$Sepal.Length, main="Versicolor: Sepal.Length")
+qqline(iris[iris$Species=="versicolor",]$Sepal.Length, main="Versicolor: Sepal.Length")
+qqnorm(iris[iris$Species=="versicolor",]$Sepal.Width, main="Versicolor: Sepal.Width")
+qqline(iris[iris$Species=="versicolor",]$Sepal.Width, main="Versicolor: Sepal.Width")
+qqnorm(iris[iris$Species=="versicolor",]$Petal.Length, main="Versicolor: Petal.Length")
+qqline(iris[iris$Species=="versicolor",]$Petal.Length, main="Versicolor: Petal.Length")
+qqnorm(iris[iris$Species=="versicolor",]$Petal.Width, main="Versicolor: Petal.Width")
+qqline(iris[iris$Species=="versicolor",]$Petal.Width, main="Versicolor: Petal.Width")
+
+# Virginica
+qqnorm(iris[iris$Species=="virginica",]$Sepal.Length, main="Virginica: Sepal.Length")
+qqline(iris[iris$Species=="virginica",]$Sepal.Length, main="Virginica: Sepal.Length")
+qqnorm(iris[iris$Species=="virginica",]$Sepal.Width, main="Virginica: Sepal.Width")
+qqline(iris[iris$Species=="virginica",]$Sepal.Width, main="Virginica: Sepal.Width")
+qqnorm(iris[iris$Species=="virginica",]$Petal.Length, main="Virginica: Petal.Length")
+qqline(iris[iris$Species=="virginica",]$Petal.Length, main="Virginica: Petal.Length")
+qqnorm(iris[iris$Species=="virginica",]$Petal.Width, main="Virginica: Petal.Width")
+qqline(iris[iris$Species=="virginica",]$Petal.Width, main="Virginica: Petal.Width")
+```
+

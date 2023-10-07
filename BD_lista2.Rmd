@@ -1,0 +1,191 @@
+---
+title: "BD_lista2"
+output: pdf_document
+date: '2022-12-20'
+---
+Zadanie 1.  Dzienna   liczba   odwiedzin   popularnej   strony   internetowej   jest   dana   rozkłademN(121.000, 7500). 
+
+Jakie jest prawdopodobieństwo, że:
+a)Średnia dzienna liczba odwiedzin w ciągu tygodnia przekroczy 121.500,
+```{r}
+m = 121.000
+sigma=7500
+n = 7
+#1 sposób
+1 - pnorm(q=121.500, mean=m, sd=sigma/sqrt(n-1))
+#2 sposób
+pnorm(q=(121.500-m)/sigma*sqrt(n-1), lower.tail=FALSE)
+#wynik  0.4999349
+```
+b)Średnia dzienna liczba odwiedzin w ciągu miesiąca (30 dni) przekroczy 121.500,
+```{r}
+m = 121.000
+sigma=7500
+n = 30
+#1 sposób
+1 - pnorm(q=121.500, mean=m, sd=sigma/sqrt(n-1))
+#2 sposób
+pnorm(q=(121.500-m)/sigma*sqrt(n-1), lower.tail=FALSE)
+#wynik 0.4998568
+```
+c)Średnia dzienna liczba odwiedzin w ciągu roku przekroczy 121.500,
+```{r}
+n = 365
+#1 sposób
+1 - pnorm(q=121.500, mean=m, sd=sigma/sqrt(n-1))
+#2 sposób
+pnorm(q=(121.500-m)/sigma*sqrt(n-1), lower.tail=FALSE)
+#wynik 0.4994926
+```
+d)średnia dzienna liczba odwiedzin w ciągu miesiąca będzie się różniła o więcej niż 100 odśredniej dziennej liczby odwiedzin?
+```{r}
+n = 30
+pnorm(q=(120.900-m)/sigma*sqrt(n-1)) + pnorm(q=(121.100-m)/sigma*sqrt(n-1), lower.tail=FALSE)
+#wynik 0.9999427
+```
+
+Zadanie 2.  W pliku  BDLista2.rdata  umieszczono w zmiennej  freqs  wartości częstotliwości zegara dla 100 egzemplarzy płyty głównej, przy czym wiadomo, że częstotliwość ta jest dana rozkładem normalnym o średniej 133MHz. 
+Jakie jest prawdopodobieństwo, że:
+a)średnia wartość częstotliwości dla kolejnych 100 egzemplarzy będzie nie większa niż 132,9995MHz?
+```{r}
+load("C:/Users/Viktoriia/Downloads/BDLista2.rdata")
+x = freqs
+s = sd(x)
+m = 133
+n = 100
+pnorm(q=(132.9995-m)/s*sqrt(n), sd = n-1)
+#wynik 0.3114479
+```
+b)średnia wartość częstotliwości dla kolejnych 1000 egzemplarzy będzie nie większa niż 132,9995MHz?
+```{r}
+n = 1000
+pt(q=(132.9995-m)/s*sqrt(n), df = n-1, lower.tail = FALSE)
+#wynik 0.9404546
+```
+
+c)średnia wartość częstotliwości dla kolejnego 1000 egzemplarzy będzie w przedziale (132,9995MHz; 133,0005MHz)?
+```{r}
+pt(q=(133.0005-m)/s*sqrt(n), df = n-1) - pt(q=(132.9995-m)/s*sqrt(n), df = n-1)
+#wynik 0.8809091
+```
+Zadanie 3.  Dane   są   dwie   próby   losowe   płyt   głównych   taktowanych   zegarem   133MHz,   ale wykonane w różnej technologii. W technologii dla płyt z pierwszej próby, częstotliwość jest dana rozkładem normalnym o średniej N(133,01; 0,0005) i próba ta liczy 150 sztuk, a dla płyt z drugiejpróby, liczącej 250 egzemplarzy, rozkładem N(132,995; 0,0001). 
+Jakie jest prawdopodobieństwo,że:
+a)średnia częstotliwość dla pierwszej próbki jest większa od średniej częstotliwości dla drugiej próbki?
+```{r}
+m1 = 133.01
+sigma1 = 0.0005
+n1= 150
+m2 = 132.995
+sigma2 = 0.0001
+n2 = 250
+pnorm(q=n1,mean=m1,sd=sigma1, lower.tail = FALSE)
+```
+
+b)średnia częstotliwość dla pierwszej próbki jest większa od średniej częstotliwości dla drugiej próbki o co najmniej 0,01511MHz?
+```{r}
+
+```
+
+c)różnica między średnimi częstotliwościami dla obu prób jest w przedziale (0,01, 0,015)?
+```{r}
+
+```
+
+Zadanie 4. W   pliku   BDLista2.rdata   umieszczono   w   zmiennych  freqs1 oraz  freqs2 częstotliwości   dla   dwóch   prób   losowych   płyt   głównych   taktowanych   zegarem   133MHz,   ale wykonanych w różnej technologii. W technologii dla płyt z pierwszej próby częstotliwość jest dana rozkładem normalnym o średniej 133,01MHz, a dla płyt z drugiej próby rozkładem o średniej 132,995MHz. Wiadomo, że odchylenie standardowe jest takie samo dla obu rozkładów. 
+Jakie jestprawdopodobieństwo, że:
+a)średnia częstotliwość dla pierwszej próbki jest większa od średniej częstotliwości dla drugiej próbki?
+```{r}
+load("C:/Users/Viktoriia/Downloads/BDLista2.rdata")
+m1 = 133.01
+m2 = 132.995
+n1=length(freqs1)
+n2=length(freqs2)
+s1kw=var(freqs1)
+s2kw=var(freqs2)
+spkw=((n1-1)*s1kw + (n2-1)*s2kw)/(n1+n2-2)
+wartosc1=-(m1-m2)/(sqrt(spkw*(1/n1+1/n2)))
+pt(q=wartosc1, df=n1+n2-2, lower.tail=FALSE)
+```
+b)średnia częstotliwość dla pierwszej próbki jest większa od średniej częstotliwości dla drugiej próbki o co najmniej 0,014MHz?
+```{r}
+wartosc2=-(m1-m2-0.014)/(sqrt(spkw*(1/n1+1/n2)))
+pt(q=wartosc2, df=n1+n2-2, lower.tail=FALSE)
+#wynik 0.9104596
+```
+
+c)różnica między średnimi częstotliwościami dla obu prób jest w przedziale (0,013, 0,015)?
+```{r}
+pt(q=0.015, df=n1+n2) - pt(q=0.013, df=n1+n2)
+```
+#wyklad 8 
+Zadanie 5. Czas wykonania implementacji algorytmu dla losowych danych wejściowych jest dany rozkładem normalnym o wariancji 10 (ms)2. 
+Jakie jest prawdopodobieństwo, że:
+a)wariancja wykonania dla 100 instancji danych losowych przekroczy 12 (ms)2?
+```{r}
+n = 100
+sigma = 10
+pchisq(q=(n-1)*12/sigma, df=n-1, lower.tail = FALSE)
+#wynik 0.08540651
+```
+b)wariancja wykonania dla 100 instancji danych losowych nie przekroczy 8 (ms)2?
+```{r}
+pchisq(q=(n-1)*8/sigma, df=n-1)
+#wynik 0.07140148
+```
+c)wariancja wykonania dla 100 instancji danych losowych będzie w przedziale (10 (ms)2, 12 (ms)2)?
+```{r}
+pchisq(q=(n-1)*12/sigma, df=n-1) - pchisq(q=(n-1)*10/sigma, df=n-1)
+#wynik 0.3956904
+```
+
+d)wariancja wykonania dla 100 instancji danych będzie co najmniej dwa razy większa od rzeczywistej?
+```{r}
+pchisq(q=(n-1)*0.02*1.1/sigma, df=n-1, lower.tail = FALSE) #~0
+```
+
+Zadanie 6. Do rozwiązania tego samego problemu, który rozwiązuje algorytm z Zadania 6, zaproponowano Algorytm B, którego czas wykonania jest dany rozkładem normalnym o wariancji  15 (ms)2. Jakie jest prawdopodobieństwo, że przy wykonaniu Algorytmu A na 100 losowych instancjach oraz algorytmu B na 150 losowych instancjach, dla tych prób losowych:
+```{r}
+sigma1 = 10 
+n1 = 100 
+chisq1 = (n1 - 1) * 10 / sigma1 
+sigma2 = 15 
+n2 = 150 
+chisq2 = (n2 - 1) * 15 / sigma2
+```
+
+a)wariancja czasu wykonania Algorytmu A jest co najmniej o 20% większa od wariancji czasuwykonania Algorytmu B?
+```{r}
+pchisq(q = 1.2 * chisq2, df = n1 - 1, lower.tail = FALSE)
+#wynik 1.600794e-06
+```
+
+b)wariancja czasu wykonania Algorytmu B jest co najmniej dwa razy większa od wariancji czasu wykonania Algorytmu A?
+```{r}
+pchisq(q = 2 * chisq1, df = n2 - 1, lower.tail = FALSE)
+#wynik 0.004477682
+```
+c)wariancje czasu wykonania obu algorytmów są takie same z dokładnością do 5%?
+```{r}
+pchisq(q = 1.05 * chisq2, df = n1 - 1) - pchisq(q = 0.95 * chisq2, df = n1 - 1) + pchisq(q = 1.05 * chisq1, df = n2 - 1) - pchisq(q = 0.95 * chisq1, df = n2 - 1)
+#wynik 0.004832288
+```
+Zadanie 7. Prawdopodobieństwo pobrania gry w dniu premiery w czasie nie więcej niż 1h wynosi 0.25. Jakie jest prawdopodobieństwo, że:
+a) spośród tysiąca graczy, mniej niż 260 uda się pobrać grę w tym czasie?
+```{r}
+t=1
+m = 0.25
+pnorm(q = 260 / 1000, mean = m, sd = sqrt(m * (t - m) / 1000))
+#wynik 0.7673956
+```
+
+b) spośród 100.000 graczy, więcej niż 25.200 uda się pobrać grę w tym czasie?
+```{r}
+pnorm(q = 25200 / 100000, mean = m, sd = sqrt(m * (t - m) / 100000), lower.tail = FALSE)
+#wynik 0.07206352
+```
+c) liczba graczy spośród 1.000.000, którym uda się pobrać grę w tym czasie, jest w przedziale (249.000, 251.000)? 
+```{r}
+pnorm(q = 251000 / 1000000, mean = m, sd = sqrt(m * (t - m) / 1000000)) - pnorm(q = 249000 / 1000000, mean = m, sd = sqrt(m * (t - m) / 1000000))
+#wynik 0.9790787
+```
+

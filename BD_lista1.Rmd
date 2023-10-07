@@ -1,0 +1,377 @@
+---
+title: "BD_lista1"
+output: pdf_document
+date: '2022-12-07'
+---
+
+__ZADANIE__1_
+
+Na stację kolejową wjeżdża pociąg osobowy. W pociągu jest 200 miejsc siedzących. Na  stacji czeka grupa 80 pasażerów. Prawdopodobieństwo, że w danym składzie na tej stacji kolejowej o tej godzinie dane miejsce siedzące jest zajęte, wynosi 80%. W środowisku R wylicz:
+
+a) prawdopodobieństwo tego, że wszyscy wsiadający pasażerowie będą mieli miejsce siedzące (80 do 200)
+```{r}
+k=80
+n=200
+p=0.2
+x=80:200
+#1_sposób
+sum(dbinom(x=x,size=n, prob=p)) 
+#2sposób
+1-pbinom(q=79, size=n, prob=p)
+#3sposób
+pbinom(q=79,size=n, prob=p, lower.tail =FALSE)
+#wynik [1] 7.378461e-11
+```
+
+b) prawdopodobieństwo tego, że dokładnie połowa wsiadających pasażerów znajdzie miejsce siedzące
+```{r}
+k=80
+n=200
+p=0.2
+dbinom(x=40, size=n,prob=p) 
+#wynik [1] 0.0703696
+```
+
+c) prawdopodobieństwo tego, że co najmniej połowa wsiadających pasażerów znajdzie miejsce siedzące 
+```{r}
+#1_sposób___korzystamy z tego samego sposobu co a punkcie a
+1-pbinom(q=39, size=n, prob=p)
+#2sposób
+pbinom(q=39,size=n, prob=p, lower.tail =FALSE)
+#wynik [1] 0.52819
+```
+
+d) prawdopodobieństwo tego, że parzysta liczba wsiadających pasażerów znajdzie miejsce siedzące
+```{r}
+#tworzymy wekrot liczb parzystych
+x= seq(from=0, to=80, by=2)
+x
+sum(dbinom(x=x,size=n, prob=p))+ (1-pbinom(q=79, size=n, prob=p))
+#wynik [1] 0.5
+```
+
+e) prawdopodobieństwo, że liczba wsiadających pasażerów, dla których zabrakło miejsca siedzącego, zawiera się w przedziale zamkniętym [30; 60]
+```{r}
+#1_sposób
+pbinom(q=50, size=n, prob=p) - pbinom(q=19, size=n, prob=p)
+#2_sposoób
+sum(dbinom(x=20:50, size=n, prob=p))
+#wynik [1] 0.9654582
+```
+
+f) wartość oczekiwana
+```{r}
+EX = p*n
+EX
+#wynik [1] 40
+
+#wariancja
+D2X = n*p*(1-p)
+D2X
+#wynik [1] 32
+```
+
+g) medianę liczby wolnych miejsc.
+```{r}
+Me = (n + 1)/2.
+Me
+#wynik [1] 100.5
+```
+
+Wykonaj symulację 100 przyjazdów pociągów. W ilu przypadkach wolnych miejsc było więcej niż
+50?
+```{r}
+x = rbinom(n=100,size= n, prob = p)
+x1 = x[x>50]
+length(x1)
+```
+Wykres rozkładu prawdopodobieństwa
+```{r}
+k = 0:200
+#wersja punktowa___lista_1(a)_roklad_prawdop
+plot(k, dbinom(x=k, size=n, prob=p),
+     xlab="x", ylab="Pr(x)", main="Rozkład prawdopodobieństwa")
+
+
+# wersja paskowa___lista_1(b)_roklad_prawdop
+barplot(names.arg=k, dbinom(x=k, size=n, prob=p),
+        xlab="x", ylab="Pr(x)",main="Rozkład prawdopodobieństwa")
+
+#wykres dystrybuanty
+k = 0:200
+# wersja punktowa___lista_1(c)_dystrybuanta
+plot(k, pbinom(q=k, size=n, prob=p),
+     xlab="x", ylab="F(x)", main="Dystrybuanta")
+# wersja paskowa___lista_1(d)_dystrybuanta
+barplot(names.arg=k, pbinom(q=k, size=n, prob=p),
+        xlab="x", ylab="F(x)", main="Dystrybuanta")
+```
+
+
+__ZADANIE__2_(wykład 4) Dla popularnej gry sieciowej istnieje 900 serwerów. Algorytm,który ma przyłączyć gracza do serwera, wyznacza losowo 30 różnych serwerów, aby znaleźć środowisko rozgrywki najbardziej adekwatne do statystyk gracza. Załóżmy, że dla danego gracza istnieje 189 serwerów z środowiskiem. Wylicz w R prawdopodobieństwo, że w grupie 30 serwerów sprawdzonych przez algorytm:
+
+#dwumianowy nie pasuje, daltego wykorzystam hypergiometrycznym
+
+a) na dokładnie 10 serwerach środowisko będzie adekwatne
+```{r}
+x = #liczba serwerów (spośród wylosowanych 30), na których są adekwatne środowisko 
+N = 900
+n = 30
+b = 189
+c = 711
+dhyper(x=10,m = b,n = c,k = n) 
+#phyper = birze pod uwage sume od 1 do 10, a dhyper bierze dokladnie 10
+#wynik [1] 0.04389704
+```
+b) na co najmniej 10 serwerach środowisko będzie adekwatne,
+```{r}
+#1sposób
+1 - phyper(q=9, m = b, n = c,k = n)
+#2sposób
+phyper(q=9,m = b, n = c,k = n, lower.tail =FALSE)
+```
+
+c) liczba serwerów z adekwatnym środowiskiem jest albo w przedziale [0; 5], albo w  przedziale [15; 20],
+```{r}
+# 0<x<5 oraz 15<x<20
+phyper(q=5, m = b, n = c,k = n) + (phyper(q=20, m = b, n = c,k = n)- phyper(q=14, m = b, n = c,k = n))
+#wynik [1] 0.3723132
+```
+d) liczba serwerów z nieadekwatnym środowiskiem jest albo w przedziale [0; 5], albo w  przedziale [15; 20].
+```{r}
+#1sposób
+phyper(q=5, m = c, n = b,k = n) + (phyper(q=20, m = c, n = b,k = n)- phyper(q=14, m = c, n = b,k = n))
+
+#2sposób
+
+#10 < x < 15 oraz x >25
+
+#nieadekwatne       0,1,2,3,4,5          15,16,17,18,19,20
+
+#adekwatne      30,29,28,27,26,25       15,14,13,12,11,10
+
+# x >= 25                   10 <= x <= 15
+
+1 - phyper(q=24, m = b, n = c,k = n) + (phyper(q=15, m = b, n = c,k = n)- phyper(q=9, m = b, n = c,k = n))
+```
+
+Wykonaj symulację 50 wykonań algorytmu. Jaka była średnia liczba serwerów z adekwatnym
+środowiskiem?
+```{r}
+x = rhyper(nn=50, m = b,n = c, k = n)
+x
+y=x[x=b]
+y
+
+```
+
+Wylicz wartość oczekiwaną oraz dystrybuantę dla liczby serwerów z adekwatnym środowiskiem.
+Do sprawozdania dołącz wykresy rozkładu prawdopodobieństwa (dla możliwych wartości zmiennej
+losowej) i dystrybuanty
+```{r}
+#wartosc oczekiwana 
+EX = p*b
+EX
+#wynik [1] 37.8
+
+#dystrybuanta 
+k = 0:189
+# wersja paskowa roklad_prawdop
+barplot(names.arg=k, dhyper(x=k, m = b,n = c, k = n, log = FALSE),
+        xlab="x", ylab="Pr(x)",main="Rozkład prawdopodobieństwa")
+# wersja punktowa___lista_1(c)_dystrybuanta
+plot(k, phyper(q=k, m = b,n = c, k = n),
+     xlab="x", ylab="F(x)", main="Dystrybuanta")
+```
+
+
+
+___ZADANIE_3___Wykonaj zadanie 1 korzystając z rozkładu Poissona..Na stację kolejową wjeżdża pociąg osobowy. W pociągu jest 200 miejsc siedzących. Na
+stacji czeka grupa 80 pasażerów. Prawdopodobieństwo, że w danym składzie na tej stacji kolejowej
+o tej godzinie dane miejsce siedzące jest zajęte, wynosi 80%. W środowisku R wylicz:
+
+a) prawdopodobieństwo tego, że wszyscy wsiadający pasażerowie będą mieli miejsce
+siedzące,
+```{r}
+dpois(x=80, lambda= 0.2 *200)
+```
+
+b) prawdopodobieństwo tego, że dokładnie połowa wsiadających pasażerów znajdzie
+miejsce siedzące,
+```{r}
+dpois(x=40, lambda = 0.2 * 200)
+```
+c) prawdopodobieństwo tego, że co najmniej połowa wsiadających pasażerów znajdzie
+miejsce siedzące,
+```{r}
+ppois(q=40, lambda = 0.2 * 200)
+```
+d) prawdopodobieństwo tego, że parzysta liczba wsiadających pasażerów znajdzie miejsce
+siedzące,
+```{r}
+q = seq(from=0,to=80,by=2)
+sum(dpois(x=q, lambda = 0.2*200))+sum(dpois(x=81:200, lambda = 0.2*200))
+```
+
+e) prawdopodobieństwo, że liczba wsiadających pasażerów, dla których zabrakło miejsca
+siedzącego, zawiera się w przedziale zamkniętym [30; 60],
+```{r}
+1-ppois(q=79,lambda = 0.8*200) - sum(dpois(x=30:60, lambda = 0.8*200))
+```
+
+f) wartość oczekiwaną i wariancję.
+```{r}
+Ex = 200*0.2
+Ex
+Dx2 = 200*0.2*(1-0.2)
+Dx2
+```
+
+g) medianę liczby wolnych miejsc.
+```{r}
+median(0:40)
+```
+
+Wykonaj symulację 100 przyjazdów pociągów. W ilu przypadkach wolnych miejsc było więcej niż
+50?
+```{r}
+1 - ppois(q=49, lambda = 0.2*200)
+```
+
+Do sprawozdania dołącz wykresy rozkładu prawdopodobieństwa (dla możliwych wartości zmiennej
+losowej) i dystrybuanty.
+```{r}
+k = 0:80
+barplot(names.arg = k, dpois(x=k, lambda = 0.2*200),
+  xlab = "x", ylab = "Pr(x)",
+  main = "Rozkład prawdopodobieństwa")
+barplot(names.arg=k,ppois(q=k, lambda = 200* 0.2),
+  xlab = "x", ylab = "F(x)", main= "Dystrybuanta")
+```
+
+___ZADANIE__4__Czas przesunięcia głowicy dysku twardego nad docelową ścieżkę dany jest rozkładem
+równomiernym w przedziale [2; 18] ms. Wylicz w R:
+
+a) prawdopodobieństwo, że czas ten nie przekroczy 10ms,
+```{r}
+a = 2
+b = 18
+punif(q=11, min=a, max=b)
+```
+b) prawdopodobieństwo, że czas ten będzie równy 10ms z tolerancją 1ms,
+```{r}
+punif(q=11, min=a, max=b) - punif(q=9, min=a, max=b)
+```
+
+c) prawdopodobieństwo, że czas ten będzie większy niż 15ms,
+```{r}
+punif(q=15, min=a, max=b, lower.tail = FALSE)
+```
+
+d) prawdopodobieństwo, że czas ten będzie równy co najmniej 15ms,
+```{r}
+punif(q=14, min=a, max=b, lower.tail = FALSE)
+```
+
+e) prawdopodobieństwo, że czas ten nie będzie się różnił od czasu oczekiwanego o więcej niż
+jedno odchylenie standardowe,
+f) prawdopodobieństwo, że czas ten będzie się różnił od czasu oczekiwanego o więcej niż dwa
+g) wartość graniczną dla 70% najkrótszych czasów przesunięcia.
+```{r}
+qunif(p=0.7, min=a, max=b)
+```
+
+h) wartość oczekiwaną i wariancję.
+```{r}
+#wartosc oczekiwana
+EX = (a+b)/2
+EX
+#wariancja
+DX = (b-a)^2/12
+DX
+```
+
+Do sprawozdania dołącz wykresy rozkładu prawdopodobieństwa z oznaczeniem obszaru
+prawdopodobieństwa dla punktów a)-e) oraz wykres dystrybuanty.
+```{r}
+x = 0:20
+plot(x, dunif(x=x, min=a, max=b), type = "l",
+  xlab="x", ylab="Pr(x)",
+  main="Funkcja gęstości prawdopodobieństwa")
+plot(x, punif(q=x, min=a, max=b), type = "l",
+  xlab="x", ylab="f(x)",
+  main="Dystrybuanta")
+```
+
+
+__ZADANIE__5___Zajętość pamięci dla struktur danych potrzebnych do wykonania pewnej procedury
+dana jest rozkładem N(12MB; 4MB). Wylicz w R:
+#(N(m,q) (N - rozklad normalny, m - średnia, sigma(na razie zaznaczyłam jako q) = odch.str)
+```{r}
+x = seq(from = 4, to= 20,by = 0.1)
+plot(x, dnorm(x=x, mean = 12,sd = 4), type = 'l')
+```
+a) prawdopodobieństwo, że rozmiar ten nie przekroczy 8MB,
+```{r}
+pnorm(q = 8, mean = 12,sd = 4)
+```
+
+b) prawdopodobieństwo, że będzie w przedziale (14MB; 16MB),
+```{r}
+pnorm(q=16,mean = 12,sd=4) - pnorm(q=14,mean = 12,sd=4)
+```
+
+c) prawdopodobieństwo, że będzie większy niż 15MB,
+```{r}
+pnorm(q=15, mean = 12, sd=4, lower.tail = FALSE)
+```
+
+d) prawdopodobieństwo, że będzie równy co najmniej 15MB,
+```{r}
+{r}
+pnorm(q=14,mean = 12,sd=4, lower.tail = FALSE)
+```
+
+e) prawdopodobieństwo, że nie będzie się różnił od czasu oczekiwanego o więcej niż jedno
+odchylenie standardowe,
+```{r}
+#pnorm(q=m+sigma, mean=m, sd=sigma) - pnorm(q=m-sigma, mean=m, sd=sigma)
+pnorm(q=12+4, mean = 12, sd=4) - pnorm(q=12-4, mean=12, sd=4)
+```
+f) prawdopodobieństwo, że będzie się różnił od czasu oczekiwanego o więcej niż dwa
+odchylenia standardowe,
+```{r}
+pnorm(q=12+(2*4), mean = 12, sd=4) - pnorm(q=12-(2*4), mean=12, sd=4)
+```
+g) wartość graniczną dla 20% największych zajętości pamięci,
+```{r}
+qnorm(p=0.2, mean=12, sd=4)
+```
+
+h) wartość oczekiwaną i wariancję.
+```{r}
+#wartość oczekiwana
+m= 12
+sd = 4
+EX = m
+EX
+#wariancja
+DDX= sd^2
+DDX
+```
+
+Do sprawozdania dołącz wykresy rozkładu prawdopodobieństwa z oznaczeniem obszaru
+prawdopodobieństwa dla punktów a)-e) oraz wykres dystrybuanty.
+```{r}
+x = seq(from = 4, to= 20,by = 0.1)
+plot(x, dnorm(x=14,mean = 12,sd=4), type = "l",
+  xlab="x", ylab="Pr(x)",
+  main="Funkcja gęstości prawdopodobieństwa")
+plot(x, pnorm(q=14,mean = 12,sd=4), type = "l",
+  xlab="x", ylab="f(x)",
+  main="Dystrybuanta")
+```
+
+
+
+
